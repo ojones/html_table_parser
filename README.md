@@ -6,7 +6,7 @@ Transform html tables into usable data structures.  Using beautiful soup table o
 
 Given an html table (with or without row and col spans). You can make a 2D array
 ```python
-soup = bs({YOUR_HTML_TABLE}, "html.parser")
+soup = bs(YOUR_HTML_TABLE, "html.parser")
 test_table = soup.find('table')
 twod_array = parse.make2d(test_table)
 
