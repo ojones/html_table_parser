@@ -183,6 +183,7 @@ def col_idx(twod, possible_headings):
         else:
             # this is a hack for when cell is soup object instead of text
             found_headings.append(cell.text)
+
     for idx, found in enumerate([f.lower().strip() for f in found_headings]):
         for possible in possible_headings:
             if found == possible.lower().strip():
@@ -218,8 +219,6 @@ def column_data(table, possible_headings):
 
 def twod_col_data(twod, possible_headings):
 
-    print(col_idx(twod, possible_headings))
-
     column = col_to_list(twod, col_idx(twod, possible_headings))
 
     return remove_headings(column, possible_headings)
@@ -232,7 +231,7 @@ def remove_headings(col_list, possible_headings):
 
     for cdx, val in enumerate(col_list):
         # this ternary is hack for when val is soup object instead of text
-        val = val if type(val) is str else val.text
+        val = val if type(val) is str or type(val) is unicode else val.text
         if val.lower().strip() in [heading.lower().strip() for heading in possible_headings]:
             pop_count += 1
         else:
@@ -282,42 +281,22 @@ def has_row_heading(row):
 
 # these convert html into 2d list -----------------------------------
 
-
-def make2d(table):
+def make2d(table, text_only=True):
 
     twod = []
 
-    rows = table.find_all('tr')
-
-    for rdx, row in enumerate(rows):
+    for rdx, row in enumerate(find_rows(table)):
         twod.append([])
         for cell in find_cells(row):
             twod[rdx].append(cell)
 
+    twod = insert_colspans(twod)
+    twod = insert_rowspans(twod)
+
+    if text_only:
+        twod = textonly(twod)
+
     return twod
-
-def make2d_with_spans(tables, just_text=True):
-
-    tables = tables if type(tables) is list else [tables]
-
-    twod_tables = []
-
-    for table in tables:
-        twod = []
-        for rdx, row in enumerate(find_rows(table)):
-            twod.append([])
-            for cell in find_cells(row):
-                twod[rdx].append(cell)
-
-        twod = insert_colspans(twod)
-        twod = insert_rowspans(twod)
-
-        if just_text:
-            twod_tables.append(textonly(twod))
-        else:
-            twod_tables.append(twod)
-
-    return twod_tables
 
 
 def textonly(twod):
@@ -327,7 +306,7 @@ def textonly(twod):
     for rdx, row in enumerate(twod):
         text2d.append([])
         for cell in row:
-            text2d[rdx].append(cell.text.strip()) #help.remove_square_brackets(cell.text.strip()))
+            text2d[rdx].append(cell.text.strip())
 
     return text2d
 
@@ -375,21 +354,22 @@ def insert_colspans(twod):
     return twod
 
 
-if __name__ == '__main__':
-    import events
-    import pprint
-    pp = pprint.PrettyPrinter(indent=4, width=120)
+# dict functions -----------------------------------------------------
 
-    soup = bs(events.fetch_html(), "html.parser")
-    event_table = soup.find_all('table')[1]
+def make_dict(table, rowstart):
 
-    twod = make2d(event_table)
+    col_headings = find_headings(table)
+    twod = make2d(table)
 
-    # pp.pprint(twod)
-    pp.pprint(events.event_list())
+    events = []
+    for row in twod[rowstart:]:
+        headings_cells = zip(col_headings, row)
+        event = dict()
+        for heading, cell in headings_cells:
+            event[heading] = cell
+        events.append(event)
 
-
-
+    return events
 
 
 
