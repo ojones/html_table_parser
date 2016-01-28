@@ -5,7 +5,7 @@ Transform html tables into usable data structures.  Using beautiful soup table o
 ## Code Example
 
 Given an html table (with or without row and col spans). You can make a 2D array
-```
+```python
 soup = bs({YOUR_HTML_TABLE}, "html.parser")
 test_table = soup.find('table')
 twod_array = parse.make2d(test_table)
@@ -14,13 +14,13 @@ twod_array = parse.make2d(test_table)
 print(twod_array)
 ```
 Use that 2D array to return column data by heading name
-```
+```python
 # print column data by col heading name (case insensitive)
 print(parse.twod_col_data(twod_array, 'first name'))
 print(parse.twod_col_data(twod_array, 'lAst naMe'))
 ```
 Or transform the soup table object (test_table) into a dictionary
-```
+```python
 # row data begins on first row after col headings
 # so rowstart is 1
 print(parse.make_dict(test_table, 1))
