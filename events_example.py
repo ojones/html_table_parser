@@ -1,6 +1,6 @@
-import urllib.request
+# import urllib.request
+import requests
 from bs4 import BeautifulSoup as bs
-import ssl
 from html_table_parser import parser_functions as parse
 import pprint
 pp = pprint.PrettyPrinter(indent=4, width=100)
@@ -33,11 +33,8 @@ def fetch_html():
 
     html = ""
 
-    # bypass ssl cert error
-    context = ssl._create_unverified_context()
-
-    with urllib.request.urlopen(URL, context=context) as response:
-       html = response.read()
+    page = requests.get(URL)
+    html = page.content
 
     return html
 
