@@ -12,15 +12,14 @@ if __name__ == '__main__':
     soup = bs(test.mock_html_table(), "html.parser")
     test_table = soup.find('table')
 
-    twod = parse.make2d(test_table)
+    twod_array = parse.make2d(test_table)
 
     # print 2D array
-    pp.pprint(twod)
+    pp.pprint(twod_array)
 
     # print column data by col heading name (case insensitive)
-    pp.pprint(parse.twod_col_data(twod, 'first name'))
-    pp.pprint(parse.twod_col_data(twod, 'lAst naMe'))
-    pp.pprint(parse.twod_col_data(twod, 'POINTS'))
+    pp.pprint(parse.twod_col_data(twod_array, 'first name'))
+    pp.pprint(parse.twod_col_data(twod_array, 'lAst naMe'))
 
     # row data begins on first row after col headings
     # so rowstart is 1
